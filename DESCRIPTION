@@ -9,7 +9,7 @@ License: CC
 Encoding: UTF-8
 LazyData: true
 Depends:
-    R (>= 3.0),
+    R (>= 4.0),
     dplyr,
     tidyr,
     ggplot2,
