@@ -5,7 +5,7 @@
 #write.csv(file = "2247 Informative Peptides for Correlation Model.csv", feature_imp_cor_data)
 
 #save(model5, good_pep_excl_tot, good_pep_t, feature_imp_cor_data, file =  "SIPMS_ModelData.RData")
-load("SIPMS_ModelData.RData")
+load(SIPMS_ModelData)
 data(SIPMS_ModelData)
 `%notin%` <- Negate(`%in%`)
 # Function to simulate the Prediction process
