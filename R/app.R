@@ -25,7 +25,7 @@ Sum_Normalization <- function(x, dff_){
 Species_Correlation <- function(Peptide_list) {
   # Simulating some prediction logic
   Sys.sleep(2)  # Simulating processing time
-  load(file = "data/SIPMS_ModelData.RData")
+  #load(file = "data/SIPMS_ModelData.RData")
   ## No. samples
   No_Sample <- ncol(Peptide_list %>% select(-Peptide))
   
@@ -153,7 +153,7 @@ require(tidyr)
 # Define the UI
 
 ui <- fluidPage(
-  #data(SIPMS_ModelData, package = "SIPMS"),
+  data(SIPMS_ModelData, package = "SIPMS"),
   img(src = "https://github.com/hassanakthv/SIPMS/assets/43888767/70437bd0-88f8-4591-8b08-c4f5215e6713",
       alt = "SSE", height = 60, width = 120),
   titlePanel("Species Search Engine - SSE"),
