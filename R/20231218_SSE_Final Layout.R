@@ -8,7 +8,20 @@
 #load(SIPMS_ModelData)
 #data(SIPMS_ModelData)
 `%notin%` <- Negate(`%in%`)
-# Function to simulate the Prediction process
+# Total intensity normalization
+Sum_Normalization <- function(x, dff_){
+  
+  
+  for (col in 1:ncol(x)){
+    
+    dff <- x[,col]/sum(x[,col], na.rm = T)
+    dff_ <- bind_cols(dff_, dff)
+    
+  }
+  
+  return(dff_)
+}
+# Function to check species correlation
 Species_Correlation <- function(Peptide_list) {
   # Simulating some prediction logic
   Sys.sleep(2)  # Simulating processing time
@@ -122,18 +135,7 @@ Species_Prediction <- function(Peptide_list){
   
   
 }
-Sum_Normalization <- function(x, dff_){
-  
-  
-  for (col in 1:ncol(x)){
-    
-    dff <- x[,col]/sum(x[,col], na.rm = T)
-    dff_ <- bind_cols(dff_, dff)
-    
-  }
-  
-  return(dff_)
-}
+
 
 # Install required packages if not already installed
 if (!require("shiny")) install.packages("shiny")
