@@ -336,5 +336,5 @@ server <- function(input, output, session) {
 
 }
 # Run the Shiny app
-load('data/SIPMS_ModelData.RData')
+#load('data/SIPMS_ModelData.RData')
 shinyApp(ui, server)
