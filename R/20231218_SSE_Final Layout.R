@@ -178,7 +178,7 @@ ui <- fluidPage(
 
 # Define the server
 server <- function(input, output, session) {
-  data(SIPMS_ModelData, package = "SIPMS")
+  load("/data/SIPMS_ModelData.RData")
   options(shiny.maxRequestSize=30*1024^2)
   # Function to read the uploaded CSV file
   peptides_data <- data.frame()
