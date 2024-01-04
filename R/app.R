@@ -1,17 +1,13 @@
 `%notin%` <- Negate(`%in%`)
 # Total intensity normalization
 Sum_Normalization <- function(x, dff_){
-  
-  
   for (col in 1:ncol(x)){
-    
     dff <- x[,col]/sum(x[,col], na.rm = T)
-    dff_ <- bind_cols(dff_, dff)
-    
+    dff_ <- bind_cols(dff_, dff)  
   }
-  
   return(dff_)
 }
+
 # Function to check species correlation
 Species_Correlation <- function(Peptide_list) {
   # Simulating some prediction logic
@@ -340,4 +336,5 @@ server <- function(input, output, session) {
 
 }
 # Run the Shiny app
+load('data/SIPMS_ModelData.RData')
 shinyApp(ui, server)
