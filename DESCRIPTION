@@ -7,7 +7,7 @@ Maintainer: Hassan Gharibi <hassan.gharibi@ki.se>
 Description: SIPMS provides a species identification and predicition by using a set of species peptide marker and an in-built random forest classifier.
 License: CC
 Encoding: UTF-8
-LazyData: true
+LazyData: false
 Depends:
     R (>= 4.0),
     dplyr,
