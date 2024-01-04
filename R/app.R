@@ -164,7 +164,7 @@ ui <- fluidPage(
       checkboxInput("check_database", "Check against built-in database"),
       actionButton("analyze_btn", "Search")
     ),
-    mainPanel(HTML('<img src="https://en.wikipedia.org/wiki/File:Thermo_Fisher_Scientific_logo.svg" width="100%" height="auto">'),
+    mainPanel(
       tabsetPanel(
         tabPanel("Description",verbatimTextOutput("description"), 
                  HTML('<img src="https://github.com/hassanakthv/SIPMS/assets/43888767/b38933a0-56c3-4b79-b6b5-5944f864477b" width="100%" height="auto">')),
