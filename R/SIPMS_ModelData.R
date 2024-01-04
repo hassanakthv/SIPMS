@@ -5,5 +5,5 @@
 #' @docType data
 #' @name SIPMS_ModelData
 #' @usage data(your_data)
-"SIPMS_ModelData.RData"
+load("data/SIPMS_ModelData.RData")
 #NULL
