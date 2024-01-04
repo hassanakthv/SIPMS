@@ -18,14 +18,12 @@ Here you can see the current species inventory
 Currently, SSE can be utilized locally with the following command in R versions higher than 4.0:
 
 ```
-install.packages("shiny")
-library(shiny)
-runGitHub(repo = "hassanakthv/SIPMS",subdir = "R")
-```
-
-Alternatively, the package can be downloaded from GitHub using the following command:
-```
 install.packages("remotes")
+install.packages("shiny")
+
+library(shiny)
 library(remotes)
+
 install_github("hassanakthv/SIPMS")
+runGitHub(repo = "hassanakthv/SIPMS",subdir = "R")
 ``` 
