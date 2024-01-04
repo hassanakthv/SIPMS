@@ -26,4 +26,5 @@ library(remotes)
 
 install_github("hassanakthv/SIPMS")
 runGitHub(repo = "hassanakthv/SIPMS",subdir = "R")
-``` 
+```
+The peptide file should have a column named "Peptide" as the first column and the rest of the columns should denote the samples names and contain the peptide abundances.
