@@ -178,6 +178,7 @@ ui <- fluidPage(
 
 # Define the server
 server <- function(input, output, session) {
+  data(SIPMS_ModelData, package = "SIPMS")
   options(shiny.maxRequestSize=30*1024^2)
   # Function to read the uploaded CSV file
   peptides_data <- data.frame()
@@ -191,7 +192,7 @@ server <- function(input, output, session) {
     }
   })
   
-  # Function to check similarity with the built-in database
+  # Function to check the similarity with the built-in database
   sample_correlation <- reactive({
     if(!is.null(input$file)){
     if (input$check_database) {
