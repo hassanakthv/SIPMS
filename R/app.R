@@ -153,7 +153,7 @@ require(tidyr)
 # Define the UI
 
 ui <- fluidPage(
-  data(SIPMS_ModelData, package = "SIPMS"),
+  load('data/SIPMS_ModelData.RData'),
   img(src = "https://github.com/hassanakthv/SIPMS/assets/43888767/70437bd0-88f8-4591-8b08-c4f5215e6713",
       alt = "SSE", height = 60, width = 120),
   titlePanel("Species Search Engine - SSE"),
@@ -181,7 +181,7 @@ ui <- fluidPage(
 # Define the server
 server <- function(input, output, session) {
   
-  load("data/SIPMS_ModelData.RData")
+  #load("data/SIPMS_ModelData.RData")
   options(shiny.maxRequestSize=30*1024^2)
   # Function to read the uploaded CSV file
   peptides_data <- data.frame()
