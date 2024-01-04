@@ -151,7 +151,7 @@ require(tidyr)
 # Define the UI
 
 ui <- fluidPage(
-  data(SIPMS_ModelData, package = "SIPMS"),
+  #data(SIPMS_ModelData, package = "SIPMS"),
   img(src = "https://github.com/hassanakthv/SIPMS/assets/43888767/70437bd0-88f8-4591-8b08-c4f5215e6713",
       alt = "SSE", height = 60, width = 120),
   titlePanel("Species Search Engine - SSE"),
@@ -209,7 +209,7 @@ server <- function(input, output, session) {
   # Output similar peptides as a table
   output$species_corr <- renderDT({
     if(!is.null(input$file)){
-    sample_correlation() %>% select(-Pvalue, -Rank) %>%  datatable(extensions = 'Buttons', options = list(
+    sample_correlation() %>% select(-Pvalue, -Rank) %>% datatable(extensions = 'Buttons', options = list(
       dom = 'Bfrtip',
       buttons = c('copy', 'csv', 'excel', 'pdf', 'print'))) %>%
       formatSignif('Mean_Cor', 2)
