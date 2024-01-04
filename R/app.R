@@ -1,12 +1,3 @@
-
-
-#write.csv(file = "All Species Exclusive Peptides.csv", good_pep_excl_tot)
-#write.csv(file = "88 Species Exclusive Peptides for RandomForest Model.csv", good_pep_t)
-#write.csv(file = "2247 Informative Peptides for Correlation Model.csv", feature_imp_cor_data)
-
-#save(model5, good_pep_excl_tot, good_pep_t, feature_imp_cor_data, file =  "SIPMS_ModelData.RData")
-#load(SIPMS_ModelData)
-#data(SIPMS_ModelData)
 `%notin%` <- Negate(`%in%`)
 # Total intensity normalization
 Sum_Normalization <- function(x, dff_){
@@ -25,7 +16,7 @@ Sum_Normalization <- function(x, dff_){
 Species_Correlation <- function(Peptide_list) {
   # Simulating some prediction logic
   Sys.sleep(2)  # Simulating processing time
-  #load(file = "data/SIPMS_ModelData.RData")
+  load(file = "data/SIPMS_ModelData.RData")
   ## No. samples
   No_Sample <- ncol(Peptide_list %>% select(-Peptide))
   
