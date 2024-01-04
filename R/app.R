@@ -344,7 +344,7 @@ server <- function(input, output, session) {
   
   output$description <- renderText({
   paste0("Current Species Search Engine comprise 8 different species: Grey Seal, Harbor Seal
-         Southern Elephant Seal, Grey Whale, Cuvier's Beaked Whale,
+         Sperm whale, Grey Whale, Cuvier's Beaked Whale,
          Steller's Sea cow, Whooper Swan and Peregrine Falcon")
     })
 
