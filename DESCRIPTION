@@ -1,0 +1,26 @@
+Package: SIPMS
+Type: Package
+Title: Species Identification and Predicition by Mass Spectrometry
+Version: 0.1.0
+Author: Hassan Gharibi
+Maintainer: Hassan Gharibi <hassan.gharibi@ki.se>
+Description: SIPMS provides a species identification and predicition by using a set of species peptide marker and an in-built random forest classifier.
+License: CC
+Encoding: UTF-8
+LazyData: true
+Depends:
+    R (>= 3.0),
+    dplyr,
+    tidyr,
+    ggplot2,
+    broom,
+    DT,
+    Rshiny,
+Imports:
+    Rshiny,
+    gridExtra,
+    knitr,
+    stats,
+    stringr,
+    utils,
+    rmarkdown
