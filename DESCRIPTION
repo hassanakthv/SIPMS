@@ -15,12 +15,16 @@ Depends:
     ggplot2,
     broom,
     DT,
-    Rshiny,
+    shiny,
+    shinydashboard,
+    randomForest
 Imports:
-    Rshiny,
+    shiny,
+    shinydashboard,
     gridExtra,
     knitr,
     stats,
     stringr,
     utils,
-    rmarkdown
+    rmarkdown,
+    randomForest
