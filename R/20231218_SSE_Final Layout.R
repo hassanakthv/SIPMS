@@ -12,7 +12,7 @@
 Species_Correlation <- function(Peptide_list) {
   # Simulating some prediction logic
   Sys.sleep(2)  # Simulating processing time
-  load(file = "/data/SIPMS_ModelData.RData")
+  #load(file = "/data/SIPMS_ModelData.RData")
   ## No. samples
   No_Sample <- ncol(Peptide_list %>% select(-Peptide))
   
