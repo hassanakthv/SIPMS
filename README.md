@@ -3,20 +3,29 @@
 
 *Species Identification and Prediction Method*
 
-SIP-MS uses shotgun proteomics techniques to provide collagenous peptide-based species identification. SIP-MS is built upon two pillars: a machine learning method classifier (a Random Forest classifier) with species-specific peptide sequences and abundances and a correlation classifier that considers all the informative peptides in a dataset. 
+SIP-MS leverages shotgun proteomics techniques to offer collagenous peptide-based species identification. It stands on two foundational pillars: a machine learning method classifier (a Random Forest classifier) with species-specific peptide sequences and abundances, and a correlation classifier that considers all informative peptides in a dataset.
 ***
 
 *Species Search Engine (SSE)*
 
-SIP-MS is embedded as the back-end algorithm for the current SSE GUI which as of Jan 2024 comprises 8 species. SSE takes into account several factors that are given as the results in SIP-MS and then either gives a prediction score for the submitted sample to identify the species or provides a similarity score for a sample (in case that the verdict from SSE is that the species for the submitted samples is not in the current database).
+SIP-MS is integrated as the back-end algorithm for the current SSE GUI, which, as of January 2024, encompasses 8 species. SSE takes into account various factors provided by SIP-MS results. It then either yields a prediction score for the submitted sample to identify the species or offers a similarity score for a sample in cases where SSE determines that the species for the submitted samples is not in the current database.
 
 
 Here you can see the current species inventory
 ![SSE_Description of Current Database](https://github.com/hassanakthv/SIPMS/assets/43888767/b38933a0-56c3-4b79-b6b5-5944f864477b)
 ***
 # Performing Prediction on a local server
-Currently, SSE can be used locally using the below command in the R version higher than 4.0
+Currently, SSE can be utilized locally with the following command in R versions higher than 4.0:
 
-``` 
-__shiny::runGitHub(repo = "hassanakthv/SIPMS",subdir = "R")__
+```
+install.packages("shiny")
+library(shiny)
+runGitHub(repo = "hassanakthv/SIPMS",subdir = "R")
+```
+
+Alternatively, the package can be downloaded from GitHub using the following command:
+```
+install.packages("remotes")
+library(remotes)
+install_github("hassanakthv/SIPMS")
 ``` 
