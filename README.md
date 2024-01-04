@@ -17,4 +17,6 @@ Here you can see the current species inventory
 # Performing Prediction on a local server
 Currently, SSE can be used locally using the below command in the R version higher than 4.0
 
+``` 
 __shiny::runGitHub(repo = "hassanakthv/SIPMS",subdir = "R")__
+``` 
