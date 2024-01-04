@@ -1,10 +1,10 @@
 
 
-write.csv(file = "All Species Exclusive Peptides.csv", good_pep_excl_tot)
-write.csv(file = "88 Species Exclusive Peptides for RandomForest Model.csv", good_pep_t)
-write.csv(file = "2247 Informative Peptides for Correlation Model.csv", feature_imp_cor_data)
+#write.csv(file = "All Species Exclusive Peptides.csv", good_pep_excl_tot)
+#write.csv(file = "88 Species Exclusive Peptides for RandomForest Model.csv", good_pep_t)
+#write.csv(file = "2247 Informative Peptides for Correlation Model.csv", feature_imp_cor_data)
 
-save(model5, good_pep_excl_tot, good_pep_t, feature_imp_cor_data, file =  "SIPMS_ModelData.RData")
+#save(model5, good_pep_excl_tot, good_pep_t, feature_imp_cor_data, file =  "SIPMS_ModelData.RData")
 load("SIPMS_ModelData.RData")
 `%notin%` <- Negate(`%in%`)
 # Function to simulate the Prediction process
