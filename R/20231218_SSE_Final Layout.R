@@ -151,6 +151,7 @@ require(tidyr)
 # Define the UI
 
 ui <- fluidPage(
+  data(SIPMS_ModelData, package = "SIPMS"),
   img(src = "https://github.com/hassanakthv/SIPMS/assets/43888767/70437bd0-88f8-4591-8b08-c4f5215e6713",
       alt = "SSE", height = 60, width = 120),
   titlePanel("Species Search Engine - SSE"),
