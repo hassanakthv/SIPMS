@@ -167,8 +167,22 @@ ui <- fluidPage(
 
 # Define the server
 server <- function(input, output, session) {
+  loadData <- function() {
+    repo_url <- "https://github.com/hassanakthv/SIPMS/blob/main/data/SIPMS_ModelData.RData"
+    load(url(repo_url))
+  }
+
+  # Call loadData function to load the data
+  loadedData <- reactive({
+    loadData()
+    # The objects loaded from data.RData are now available in the global environment
+    # You can access them directly or perform further processing here
+    # Example: data_summary <- summary(your_loaded_data_object)
+    data_summary <- "Data loaded successfully!"
+    return(data_summary)
+  })
   
-  load("data/SIPMS_ModelData.RData")
+  #load("data/SIPMS_ModelData.RData")
   options(shiny.maxRequestSize=30*1024^2)
   # Function to read the uploaded CSV file
   peptides_data <- data.frame()
