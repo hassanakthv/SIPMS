@@ -6,7 +6,7 @@
 
 #save(model5, good_pep_excl_tot, good_pep_t, feature_imp_cor_data, file =  "SIPMS_ModelData.RData")
 load("SIPMS_ModelData.RData")
-data("SIPMS_ModelData.RData")
+data(SIPMS_ModelData)
 `%notin%` <- Negate(`%in%`)
 # Function to simulate the Prediction process
 Species_Correlation <- function(Peptide_list) {
