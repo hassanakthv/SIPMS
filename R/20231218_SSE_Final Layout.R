@@ -6,6 +6,7 @@
 
 #save(model5, good_pep_excl_tot, good_pep_t, feature_imp_cor_data, file =  "SIPMS_ModelData.RData")
 load("SIPMS_ModelData.RData")
+data("SIPMS_ModelData.RData")
 `%notin%` <- Negate(`%in%`)
 # Function to simulate the Prediction process
 Species_Correlation <- function(Peptide_list) {
@@ -148,11 +149,10 @@ require(dplyr)
 require(tidyverse)
 require(tidyr)
 # Define the UI
-Thermo <- "https://en.wikipedia.org/wiki/File:Thermo_Fisher_Scientific_logo.svg"
-PAIR <- "https://github.com/hassanakthv/PAIR-MS/blob/master/PAIR-MS%20logo_wback.png"
+
 ui <- fluidPage(
-  img(src = Thermo,
-      alt = "SSE", height = 100, width = 100),
+  img(src = "https://github.com/hassanakthv/SIPMS/assets/43888767/70437bd0-88f8-4591-8b08-c4f5215e6713",
+      alt = "SSE", height = 60, width = 120),
   titlePanel("Species Search Engine - SSE"),
   sidebarLayout(
     sidebarPanel(
@@ -164,7 +164,7 @@ ui <- fluidPage(
     mainPanel(HTML('<img src="https://en.wikipedia.org/wiki/File:Thermo_Fisher_Scientific_logo.svg" width="100%" height="auto">'),
       tabsetPanel(
         tabPanel("Description",verbatimTextOutput("description"), 
-                 HTML('<img src="https://github.com/hassanakthv/PAIR-MS/blob/master/PAIR-MS%20logo_wback.png" width="100%" height="auto">')),
+                 HTML('<img src="https://github.com/hassanakthv/SIPMS/assets/43888767/b38933a0-56c3-4b79-b6b5-5944f864477b" width="100%" height="auto">')),
         tabPanel("Species Correlation", DTOutput("species_corr"), verbatimTextOutput("presence_species")),
         tabPanel("Search Results - Samples Found in DB", DTOutput("analysis_result"), 
                  plotOutput("prediction_plot")),
