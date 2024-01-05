@@ -189,7 +189,8 @@ server <- function(input, output, session) {
   peptides_data <- reactive({
     req(input$file)
     if(!is.null(input$file)){
-    read.csv(input$file$datapath)[,-1]
+    #read.csv(input$file$datapath)[,-1]
+    read.csv(input$file$datapath)
     }
     else{
       "Please upload a dataset"
