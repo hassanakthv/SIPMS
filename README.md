@@ -28,3 +28,7 @@ install_github("hassanakthv/SIPMS")
 runGitHub(repo = "hassanakthv/SIPMS",subdir = "R")
 ```
 The peptide file should have a column named "Peptide" as the first column and the rest of the columns should denote the samples names and contain the peptide abundances.
+
+## How to work with SSE Interface
+![SSE_How to Upload](https://github.com/hassanakthv/SIPMS/assets/43888767/b03cdbe8-36ed-4e4c-bc37-c3c28f863748)
+
