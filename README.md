@@ -25,12 +25,15 @@ library(shiny)
 library(remotes)
 
 install_github("hassanakthv/SIPMS")
+library(SIPMS)
 runGitHub(repo = "hassanakthv/SIPMS",subdir = "R")
 ```
 The peptide file should have a column named "Peptide" as the first column and the rest of the columns should denote the samples names and contain the peptide abundances.
 
 ## How to work with SSE Interface
 Here is the workflow for using the SSE interface:
+
+
 ![SSE_How to Upload](https://github.com/hassanakthv/SIPMS/assets/43888767/5925029b-6681-4eba-96b4-6a49e0f45974)
 
 
