@@ -168,7 +168,7 @@ ui <- fluidPage(
 # Define the server
 server <- function(input, output, session) {
   loadData <- function() {
-    repo_url <- "https://github.com/hassanakthv/SIPMS/blob/main/data/SIPMS_ModelData.RData"
+    repo_url <- "https://github.com/hassanakthv/SIPMS/blob/main/data/20250202_SIPMS_ModelData.RData"
     load(url(repo_url))
   }
 
@@ -270,12 +270,12 @@ server <- function(input, output, session) {
       nn_nam <- names(cleaned_pep)
       cleaned_pep <- Sum_Normalization(x = cleaned_pep[,-1], dff_ = cleaned_pep[,1])
       names(cleaned_pep) <- nn_nam
-      rf_pep <- cleaned_pep %>% filter(Peptide %in% good_pep_t$Peptide) %>% distinct()
+      rf_pep <- cleaned_pep %>% filter(Peptide %in% good_pep$Peptide) %>% distinct()
       imp_val <- Imputed_value(peptides_data() %>% select(Peptide, sp))
       rf_pep <- Imp_replaced(imp_val = imp_val, Peptide_list = rf_pep)
       rf_pep[,-1] <- log10(rf_pep[,-1])
       
-      res_pred <- as.data.frame(predict(model5, t(rf_pep[,-1]), type = "prob"))
+      res_pred <- as.data.frame(predict(model_rf, t(rf_pep[,-1]), type = "prob"))
       for (i in rownames(res_pred)){
         res_pred[i,] <- res_pred[i,]*(sample_correlation() %>% 
                                         filter(UnknownSample == i))$Mean_Cor
