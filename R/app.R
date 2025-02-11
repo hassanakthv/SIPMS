@@ -137,22 +137,21 @@ library(randomForest)
 require(dplyr)
 require(tidyverse)
 require(tidyr)
-# Define the UI
+
 
 ui <- fluidPage(
-  #load('data/SIPMS_ModelData.RData'),
   img(src = "https://github.com/hassanakthv/SIPMS/assets/43888767/70437bd0-88f8-4591-8b08-c4f5215e6713",
       alt = "SSE", height = 60, width = 120),
-  titlePanel("Species Search Engine - SSE"),
+  titlePanel("Species Search Engine - KISSE"),
   sidebarLayout(
     sidebarPanel(
-      fileInput("file", "Upload Peptide List (CSV)",
+      fileInput("file", "Upload Peptide List (only in .csv format)",
                 accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")),
       actionButton("check_database", "Check against built-in database"),
       actionButton("analyze_btn", "Search")
     ),
     mainPanel(
-      tabsetPanel(
+      tabsetPanel(id = "main_tabs",  # Assign an ID for dynamic tab switching
         tabPanel("Description",verbatimTextOutput("description"), 
                  HTML('<img src="https://github.com/hassanakthv/SIPMS/assets/43888767/b38933a0-56c3-4b79-b6b5-5944f864477b" width="100%" height="auto">')),
         tabPanel("Species Correlation", DTOutput("species_corr"), verbatimTextOutput("presence_species")),
@@ -160,7 +159,9 @@ ui <- fluidPage(
                  plotOutput("prediction_plot")),
         tabPanel("Search Results - Samples Not found in DB", DTOutput("similarity_result"), 
                  plotOutput("similarity_plot"))
-      )
+      ),
+      # Placeholder for search progress message
+      div(id = "search_progress", style = "margin-top: 15px; font-weight: bold; color: #0073b7;")
     )
   )
 )
@@ -182,14 +183,13 @@ server <- function(input, output, session) {
     return(data_summary)
   })
   
-  #load("data/SIPMS_ModelData.RData")
+  
   options(shiny.maxRequestSize=30*1024^2)
   # Function to read the uploaded CSV file
-  peptides_data <- data.frame()
+
   peptides_data <- reactive({
     req(input$file)
     if(!is.null(input$file)){
-    #read.csv(input$file$datapath)[,-1]
     read.csv(input$file$datapath)
     }
     else{
@@ -202,6 +202,7 @@ server <- function(input, output, session) {
     if(!is.null(input$file)){
     if (input$check_database) {
       # Perform similarity check logic here with the built-in database
+      updateTabsetPanel(session, "main_tabs", selected = "Species Correlation")
       # For demonstration purposes, I'll assume a random number of similar peptides
       Species_Correlation(peptides_data()) 
       
@@ -230,82 +231,109 @@ server <- function(input, output, session) {
     r_pres <- Check_Presence(sample_correlation())
     
   })
-  output$presence_species <- renderText({
+ # output$presence_species <- renderText({
+ #   sampless <- ""
+ #   sample_str_p <- ""
+ #   U_Pres <- unique(pres_check() %>% filter(Present == "Yes"))$UnknownSample
+ #   if (length(U_Pres)!=0){
+ #   for (i in U_Pres){
+ #     sample_str_p <- paste0(sample_str_p, " ", i)
+ #     }
+ #   }
+ #   U_Abs <- unique(pres_check() %>% filter(Present == "No"))$UnknownSample
+ #   sample_str_a <- ""
+ #   if (length(U_Abs)!=0){
+ #     for (j in U_Abs){
+ #       sample_str_a <- paste0(sample_str_a, " ", j)
+ #     }
+ #   }
+ #   if (sample_str_a!="" & sample_str_p!=""){
+ #   sampless <- paste0(sample_str_p,": These samples are present in our current species database.", 
+ #          '\n',sample_str_a, ": These samples are NOT present in our current species database.")
+ #   }
+ #   if (sample_str_a=="" & sample_str_p!=""){
+ #   sampless <-  paste0(sample_str_p,": These samples are present in our current species database.")
+ #   }
+ #   if (sample_str_a!="" & sample_str_p==""){
+ #   sampless <- paste0(sample_str_a, ": These samples are NOT present in our current species database.")
+ #   }
+ #   print(sampless)
+ #   })
+
+ output$presence_species <- renderText({
     sampless <- ""
-    sample_str_p <- ""
     U_Pres <- unique(pres_check() %>% filter(Present == "Yes"))$UnknownSample
-    if (length(U_Pres)!=0){
-    for (i in U_Pres){
-      sample_str_p <- paste0(sample_str_p, " ", i)
-      }
-    }
     U_Abs <- unique(pres_check() %>% filter(Present == "No"))$UnknownSample
-    sample_str_a <- ""
-    if (length(U_Abs)!=0){
-      for (j in U_Abs){
-        sample_str_a <- paste0(sample_str_a, " ", j)
-      }
-    }
-    if (sample_str_a!="" & sample_str_p!=""){
-    sampless <- paste0(sample_str_p,": These samples are present in our current species database.", 
-           '\n',sample_str_a, ": These samples are NOT present in our current species database.")
-    }
-    if (sample_str_a=="" & sample_str_p!=""){
-    sampless <-  paste0(sample_str_p,": These samples are present in our current species database.")
-    }
-    if (sample_str_a!="" & sample_str_p==""){
-    sampless <- paste0(sample_str_a, ": These samples are NOT present in our current species database.")
-    }
-    print(sampless)
-    })
     
+    sample_str_p <- paste(U_Pres, collapse = " ")
+    sample_str_a <- paste(U_Abs, collapse = " ")
+    
+    if (sample_str_p != "") {
+      sampless <- paste0(sample_str_p, ": These samples are present in our current species database.")
+    }
+    if (sample_str_a != "") {
+      sampless <- paste0(sampless, "\n", sample_str_a, ": These samples are NOT present in our current species database.")
+    }
+    sampless
+  })
+
+
+  
   
   # Function to perform correlation analysis and prediction
+
+  # Search Function with Progress Bar
   analysis_result <- reactive({
-    if (input$analyze_btn){
-    ## Prediction Score for samples in the database
-      sp <- unique(pres_check() %>% filter(Present == "Yes"))$UnknownSample 
+    req(input$file, input$analyze_btn > 0)
+
+    withProgress(message = "Running search analysis...", value = 0, {
+      incProgress(0.3, detail = "Processing data...")
+
+      sp <- unique(pres_check() %>% filter(Present == "Yes"))$UnknownSample
       cleaned_pep <- peptides_data() %>% select(Peptide, sp)
       cleaned_pep[is.na(cleaned_pep)] <- NA
-      nn_nam <- names(cleaned_pep)
-      cleaned_pep <- Sum_Normalization(x = cleaned_pep[,-1], dff_ = cleaned_pep[,1])
-      names(cleaned_pep) <- nn_nam
+      
+      incProgress(0.6, detail = "Computing similarity scores...")
+      
+      # Normalize and prepare data
+      cleaned_pep <- Sum_Normalization(x = cleaned_pep[, -1], dff_ = cleaned_pep[, 1])
       rf_pep <- cleaned_pep %>% filter(Peptide %in% good_pep$Peptide) %>% distinct()
       imp_val <- Imputed_value(peptides_data() %>% select(Peptide, sp))
       rf_pep <- Imp_replaced(imp_val = imp_val, Peptide_list = rf_pep)
       rf_pep[,-1] <- log10(rf_pep[,-1])
       
-      res_pred <- as.data.frame(predict(model_rf, t(rf_pep[,-1]), type = "prob"))
-      for (i in rownames(res_pred)){
-        res_pred[i,] <- res_pred[i,]*(sample_correlation() %>% 
-                                        filter(UnknownSample == i))$Mean_Cor
-        
-        
+      # Prediction
+      res_pred <- as.data.frame(predict(model_rf, t(rf_pep[, -1]), type = "prob"))
+      
+      for (i in rownames(res_pred)) {
+        res_pred[i, ] <- res_pred[i, ] * (sample_correlation() %>%
+                                          filter(UnknownSample == i))$Mean_Cor
       }
-      res_pred <- round(res_pred/rowSums(res_pred),3) 
-      res_pred <- res_pred %>% mutate(UnknownSample = rownames(.)) %>% 
-        gather(key = "Species", 
-               value = "Probability_Score", 1:8) %>% 
-        group_by(UnknownSample) %>% mutate(Rank = rank(-Probability_Score)) %>% ungroup() %>% 
-      left_join(.,sample_correlation() %>% select(UnknownSample, Species, Pvalue), 
-                by = c("UnknownSample", "Species"))
-    }
-  })
-  
-  similarity_result <- reactive({
-    if (input$analyze_btn){
-      ## Prediction Score for samples in the database
-      sp1 <- unique(pres_check() %>% filter(Present == "No"))$UnknownSample 
-      sim_res <- sample_correlation() %>% filter(UnknownSample %in% sp1)
-      sim_res <- sim_res %>% group_by(UnknownSample) %>% 
-        mutate(Similarity_Score = round(Mean_Cor/sum(Mean_Cor, na.rm = T),3)) %>% 
-        mutate(Rank = rank(-Similarity_Score)) %>% 
-        select(UnknownSample, Species, Similarity_Score, Rank, Pvalue)
       
-    }
+      incProgress(0.9, detail = "Finalizing results...")
       
+      res_pred <- round(res_pred / rowSums(res_pred), 3)
+      res_pred <- res_pred %>%
+        mutate(UnknownSample = rownames(.)) %>%
+        gather(key = "Species", value = "Probability_Score", 1:8) %>%
+        group_by(UnknownSample) %>%
+        mutate(Rank = rank(-Probability_Score)) %>%
+        ungroup() %>%
+        left_join(., sample_correlation() %>% select(UnknownSample, Species, Pvalue), 
+                  by = c("UnknownSample", "Species"))
+      
+      incProgress(1, detail = "Done!")
+
+      return(res_pred)
+    })
   })
-     
+
+  # Update the progress text when search is complete
+  observeEvent(input$analyze_btn, {
+    output$search_progress <- renderUI({
+      HTML("<span style='color: green;'>Search completed! Results are now available.</span>")
+    })
+  })
   # Output analysis result
   output$analysis_result <- renderDT({
     analysis_result() %>% arrange(Rank, UnknownSample) %>% datatable(extensions = 'Buttons', options = list(
