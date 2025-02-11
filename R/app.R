@@ -284,50 +284,59 @@ server <- function(input, output, session) {
 
   # Search Function with Progress Bar
   analysis_result <- reactive({
-    req(input$file, input$analyze_btn > 0)
-
+  if (input$file & input$analyze_btn){
+    ## Prediction Score for samples in the database
     withProgress(message = "Running search analysis...", value = 0, {
       incProgress(0.3, detail = "Processing data...")
-
-      sp <- unique(pres_check() %>% filter(Present == "Yes"))$UnknownSample
-      cleaned_pep <- peptides_data() %>% select(Peptide, sp)
-      cleaned_pep[is.na(cleaned_pep)] <- NA
+    sp <- unique(pres_check() %>% filter(Present == "Yes"))$UnknownSample 
+    cleaned_pep <- peptides_data() %>% select(Peptide, sp)
+    cleaned_pep[is.na(cleaned_pep)] <- NA
+    nn_nam <- names(cleaned_pep)
+    
+    incProgress(0.6, detail = "Computing similarity scores...")
+    cleaned_pep <- Sum_Normalization(x = cleaned_pep[,-1], dff_ = cleaned_pep[,1])
+    names(cleaned_pep) <- nn_nam
+    rf_pep <- cleaned_pep %>% filter(Peptide %in% good_pep$Peptide) %>% distinct()
+    imp_val <- Imputed_value(peptides_data() %>% select(Peptide, sp))
+    rf_pep <- Imp_replaced(imp_val = imp_val, Peptide_list = rf_pep)
+    rf_pep[,-1] <- log10(rf_pep[,-1])
+    
+    res_pred <- as.data.frame(predict(model_rf, t(rf_pep[,-1]), type = "prob"))
+    for (i in rownames(res_pred)){
+      res_pred[i,] <- res_pred[i,]*(sample_correlation() %>% 
+                                      filter(UnknownSample == i))$Mean_Cor
       
-      incProgress(0.6, detail = "Computing similarity scores...")
       
-      # Normalize and prepare data
-      cleaned_pep <- Sum_Normalization(x = cleaned_pep[, -1], dff_ = cleaned_pep[, 1])
-      rf_pep <- cleaned_pep %>% filter(Peptide %in% good_pep$Peptide) %>% distinct()
-      imp_val <- Imputed_value(peptides_data() %>% select(Peptide, sp))
-      rf_pep <- Imp_replaced(imp_val = imp_val, Peptide_list = rf_pep)
-      rf_pep[,-1] <- log10(rf_pep[,-1])
-      
-      # Prediction
-      res_pred <- as.data.frame(predict(model_rf, t(rf_pep[, -1]), type = "prob"))
-      
-      for (i in rownames(res_pred)) {
-        res_pred[i, ] <- res_pred[i, ] * (sample_correlation() %>%
-                                          filter(UnknownSample == i))$Mean_Cor
-      }
-      
-      incProgress(0.9, detail = "Finalizing results...")
-      
-      res_pred <- round(res_pred / rowSums(res_pred), 3)
-      res_pred <- res_pred %>%
-        mutate(UnknownSample = rownames(.)) %>%
-        gather(key = "Species", value = "Probability_Score", 1:8) %>%
-        group_by(UnknownSample) %>%
-        mutate(Rank = rank(-Probability_Score)) %>%
-        ungroup() %>%
-        left_join(., sample_correlation() %>% select(UnknownSample, Species, Pvalue), 
-                  by = c("UnknownSample", "Species"))
-      
-      incProgress(1, detail = "Done!")
-
-      return(res_pred)
+    }
+    incProgress(0.9, detail = "Finalizing results...")
+    res_pred <- round(res_pred/rowSums(res_pred),3) 
+    res_pred <- res_pred %>% mutate(UnknownSample = rownames(.)) %>% 
+      gather(key = "Species", 
+             value = "Probability_Score", 1:8) %>% 
+      group_by(UnknownSample) %>% mutate(Rank = rank(-Probability_Score)) %>% ungroup() %>% 
+      left_join(.,sample_correlation() %>% select(UnknownSample, Species, Pvalue), 
+                by = c("UnknownSample", "Species"))
+    
+    incProgress(1, detail = "Done!")
+    
+    return(res_pred)
     })
   })
 
+similarity_result <- reactive({
+  if (input$analyze_btn){
+    ## Prediction Score for samples in the database
+    sp1 <- unique(pres_check() %>% filter(Present == "No"))$UnknownSample 
+    sim_res <- sample_correlation() %>% filter(UnknownSample %in% sp1)
+    sim_res <- sim_res %>% group_by(UnknownSample) %>% 
+      mutate(Similarity_Score = round(Mean_Cor/sum(Mean_Cor, na.rm = T),3)) %>% 
+      mutate(Rank = rank(-Similarity_Score)) %>% 
+      select(UnknownSample, Species, Similarity_Score, Rank, Pvalue)
+    
+  }
+  
+})
+    
   # Update the progress text when search is complete
   observeEvent(input$analyze_btn, {
     output$search_progress <- renderUI({
