@@ -321,7 +321,7 @@ server <- function(input, output, session) {
     
     return(res_pred)
     })
-  })
+  }})
 
 similarity_result <- reactive({
   if (input$analyze_btn){
