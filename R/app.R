@@ -319,7 +319,6 @@ server <- function(input, output, session) {
     
     incProgress(1, detail = "Done!")
     
-    return(res_pred)
     })
   }})
 
