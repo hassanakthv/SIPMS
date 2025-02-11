@@ -148,7 +148,7 @@ ui <- fluidPage(
     sidebarPanel(
       fileInput("file", "Upload Peptide List (CSV)",
                 accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")),
-      checkboxInput("check_database", "Check against built-in database"),
+      actionButton("check_database", "Check against built-in database"),
       actionButton("analyze_btn", "Search")
     ),
     mainPanel(
