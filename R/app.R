@@ -301,6 +301,25 @@ filtered_result <- reactive({
       nn_nam <- names(cleaned_pep)
       cleaned_pep <- Sum_Normalization(x = cleaned_pep[,-1], dff_ = cleaned_pep[,1])
       names(cleaned_pep) <- nn_nam
+
+      missing_peptides <- anti_join(good_pep, cleaned_pep, by = "Peptide")
+
+      # Create a new dataframe with the same structure as cleaned_pep
+    if (nrow(missing_peptides) > 0) {
+      new_peptides <- missing_peptides %>%
+        mutate(across(everything(), ~ 10^-12))  # Set all values to 10^-12
+  
+      # Ensure Peptide column retains original values
+      new_peptides$Peptide <- missing_peptides$Peptide
+        } else {
+        new_peptides <- data.frame()
+        }
+
+# Filter existing peptides and combine with missing ones
+rf_pep <- cleaned_pep %>%
+  filter(Peptide %in% good_pep$Peptide) %>%
+  distinct() %>%
+  bind_rows(new_peptides) 
       rf_pep <- cleaned_pep %>% filter(Peptide %in% good_pep$Peptide) %>% distinct()
       imp_val <- Imputed_value(peptides_data() %>% select(Peptide, sp))
       rf_pep <- Imp_replaced(imp_val = imp_val, Peptide_list = rf_pep)
