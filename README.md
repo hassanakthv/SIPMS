@@ -6,9 +6,9 @@
 SIP-MS leverages shotgun proteomics techniques to offer collagenous peptide-based species identification. It stands on two foundational pillars: a machine learning method classifier (a Random Forest classifier) with species-specific peptide sequences and abundances, and a correlation classifier that considers all informative peptides in a dataset.
 ***
 
-## Species Search Engine (SSE)
+## Species Search Engine (KISSE)
 
-SIP-MS is integrated as the back-end algorithm for the current SSE GUI, which, as of January 2024, encompasses 8 species. SSE takes into account various factors provided by SIP-MS results. It then either yields a prediction score for the submitted sample to identify the species or offers a similarity score for a sample in cases where SSE determines that the species for the submitted samples is not in the current database.
+SIP-MS is integrated as the back-end algorithm for the current SSE GUI, which, as of February 2025, encompasses 8 species. SSE takes into account various factors provided by SIP-MS results. It then either yields a prediction score for the submitted sample to identify the species or offers a similarity score for a sample in cases where SSE determines that the species for the submitted samples is not in the current database.
 
 
 Here you can see the current species inventory
