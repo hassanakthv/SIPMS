@@ -116,6 +116,28 @@ Imp_replaced <- function(imp_val, Peptide_list){
   return(pp_)
 }
 
+filter_peptides <- function(uploaded_data, built_in_data) {
+  # Ensure the Peptide column exists in both datasets
+  if (!"Peptide" %in% colnames(uploaded_data)) {
+    stop("Uploaded dataset must have a 'Peptide' column.")
+  }
+  
+  if (!"Peptide" %in% colnames(built_in_data)) {
+    stop("Built-in dataset must have a 'Peptide' column.")
+  }
+  
+  # Find common peptides
+  common_peptides <- intersect(uploaded_data$Peptide, built_in_data$Peptide)
+  
+  # Count and display the number of matches
+  num_matches <- length(common_peptides)
+  message(paste("Number of matching peptides:", num_matches))
+  
+  # Filter uploaded dataset to retain only common peptides
+  filtered_data <- uploaded_data[uploaded_data$Peptide %in% common_peptides, ]
+  
+  return(list(filtered_data = filtered_data, num_matches = num_matches))
+}
 
 
 # Install required packages if not already installed
@@ -143,11 +165,13 @@ ui <- fluidPage(
       fileInput("file", "Upload Peptide List (.csv format)",
                 accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")),
       actionButton("check_database", "Check against built-in database"),
-      actionButton("analyze_btn", "Search")
+      actionButton("analyze_btn", "Search"),
+      textOutput("match_count")
     ),
     mainPanel(
       tabsetPanel(
-        tabPanel("Description",verbatimTextOutput("description"), 
+        tabPanel("Description",verbatimTextOutput("description"),
+                  tableOutput("filtered_table"),
                  HTML('<img src="https://github.com/hassanakthv/SIPMS/assets/43888767/b38933a0-56c3-4b79-b6b5-5944f864477b" width="100%" height="auto">')),
         tabPanel("Species Correlation", DTOutput("species_corr"), verbatimTextOutput("presence_species")),
         tabPanel("Search Results - Samples Found in DB", DTOutput("analysis_result"), 
@@ -175,7 +199,8 @@ server <- function(input, output, session) {
     data_summary <- "Data loaded successfully!"
     return(data_summary)
   })
-  
+
+  built_in_data <- feature_imp_cor_data %>% select(Peptide)
   #load("data/SIPMS_ModelData.RData")
   options(shiny.maxRequestSize=30*1024^2)
   # Function to read the uploaded CSV file
@@ -190,7 +215,19 @@ server <- function(input, output, session) {
       "Please upload a dataset"
     }
   })
+
+filtered_result <- reactive({
+    req(peptides_data())
+    filter_peptides(peptides_data(), built_in_data)
+  })
+
+   output$match_count <- renderText({
+    paste("Number of matching peptides:", filtered_result()$num_matches)
+  })
   
+  output$filtered_table <- renderTable({
+    filtered_result()$filtered_data
+  })
   # Function to check the similarity with the built-in database
   sample_correlation <- reactive({
     if(!is.null(input$file)){
