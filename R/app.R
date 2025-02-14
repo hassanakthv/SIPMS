@@ -234,7 +234,7 @@ filtered_result <- reactive({
     if (input$check_database) {
       # Perform similarity check logic here with the built-in database
       # For demonstration purposes, I'll assume a random number of similar peptides
-      Species_Correlation(peptides_data()) 
+      Species_Correlation(filtered_result()) 
       
     } 
     } else {
@@ -296,7 +296,7 @@ filtered_result <- reactive({
     if (input$analyze_btn){
     ## Prediction Score for samples in the database
       sp <- unique(pres_check() %>% filter(Present == "Yes"))$UnknownSample 
-      cleaned_pep <- peptides_data() %>% select(Peptide, sp)
+      cleaned_pep <- filtered_result() %>% select(Peptide, sp)
       cleaned_pep[is.na(cleaned_pep)] <- NA
       nn_nam <- names(cleaned_pep)
       cleaned_pep <- Sum_Normalization(x = cleaned_pep[,-1], dff_ = cleaned_pep[,1])
