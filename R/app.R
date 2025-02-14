@@ -115,13 +115,7 @@ Imp_replaced <- function(imp_val, Peptide_list){
   }
   return(pp_)
 }
-Species_Prediction <- function(Peptide_list){
-  
-    
-  
-  
-  
-}
+
 
 
 # Install required packages if not already installed
@@ -143,10 +137,10 @@ ui <- fluidPage(
   #load('data/SIPMS_ModelData.RData'),
   img(src = "https://github.com/hassanakthv/SIPMS/assets/43888767/70437bd0-88f8-4591-8b08-c4f5215e6713",
       alt = "SSE", height = 60, width = 120),
-  titlePanel("Species Search Engine - SSE"),
+  titlePanel("Species Search Engine - KISSE"),
   sidebarLayout(
     sidebarPanel(
-      fileInput("file", "Upload Peptide List (CSV)",
+      fileInput("file", "Upload Peptide List (.csv format)",
                 accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")),
       actionButton("check_database", "Check against built-in database"),
       actionButton("analyze_btn", "Search")
@@ -222,7 +216,7 @@ server <- function(input, output, session) {
   else{
     " "
   }
-  })
+  }, server = FALSE)
   
   
   pres_check <- reactive({
@@ -312,7 +306,7 @@ server <- function(input, output, session) {
       dom = 'Bfrtip',
       buttons = c('copy', 'csv', 'excel', 'pdf', 'print'))) #%>%
       #formatSignif('Mean_Cor', 2)
-  })
+  }, server = FALSE)
   
   
   output$prediction_plot <- renderPlot({
@@ -330,7 +324,7 @@ server <- function(input, output, session) {
       dom = 'Bfrtip',
       buttons = c('copy', 'csv', 'excel', 'pdf', 'print'))) #%>%
     #formatSignif('Mean_Cor', 2)
-  })
+  }, servre = FALSE)
   
   
   output$similarity_plot <- renderPlot({
