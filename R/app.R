@@ -234,7 +234,7 @@ filtered_result <- reactive({
     if (input$check_database) {
       # Perform similarity check logic here with the built-in database
       # For demonstration purposes, I'll assume a random number of similar peptides
-      Species_Correlation(filtered_result())$filtered_data) 
+      Species_Correlation(filtered_result()$filtered_data) 
       
     } 
     } else {
