@@ -33,7 +33,7 @@ The peptide file should have a column named "Peptide" as the first column and th
 ## How to work with SSE Interface
 Here is the workflow for using the SSE interface:
 
+![SSE_How to Upload](https://github.com/user-attachments/assets/ffb0a0f9-3dbc-4345-b051-3b49ba62b564)
 
-![SSE_How to Upload](https://github.com/hassanakthv/SIPMS/assets/43888767/5925029b-6681-4eba-96b4-6a49e0f45974)
 
 
