@@ -14,6 +14,10 @@ SIP-MS is integrated as the back-end algorithm for the current SSE GUI, which, a
 Here you can see the current species inventory
 ![SSE_Description of Current Database](https://github.com/hassanakthv/SIPMS/assets/43888767/b38933a0-56c3-4b79-b6b5-5944f864477b)
 ***
+
+## KISSE Online tool and portal for species deposition will be available soon.
+
+
 ## Performing Prediction on a local server
 Currently, SSE can be utilized locally with the following command in R versions higher than 4.0:
 
