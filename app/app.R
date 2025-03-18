@@ -169,7 +169,6 @@ require(shinycssloaders)
 # Define the UI
 
 ui <- fluidPage(
-  #load('data/SIPMS_ModelData.RData'),
   img(src = "https://github.com/hassanakthv/SIPMS/assets/43888767/70437bd0-88f8-4591-8b08-c4f5215e6713",
       alt = "SSE", height = 60, width = 120),
   titlePanel("Species Search Engine - KISSE"),
@@ -201,20 +200,28 @@ ui <- fluidPage(
 
 # Define the server
 server <- function(input, output, session) {
-  loadData <- function() {
-    repo_url <- "https://github.com/hassanakthv/SIPMS/blob/main/data/20250202_SIPMS_ModelData.RData"
-    load(url(repo_url))
-  }
+ loadData <- function() {
+  raw_url <- "https://raw.githubusercontent.com/hassanakthv/SIPMS/main/data/20250202_SIPMS_ModelData.RData"
+  temp <- tempfile()
   
-  # Call loadData function to load the data
-  loadedData <- reactive({
-    loadData()
+  # Download the RData file from GitHub
+  download.file(raw_url, temp, mode = "wb")
+  
+  # Load the data into the global environment
+  load(temp, envir = .GlobalEnv)
+  
+  # Remove temporary file
+  unlink(temp)
+}
+  
+  loadData()  # Load data at the start of the server function
 
-    data_summary <- "Data loaded successfully!"
-    return(data_summary)
-  })
-  
+  # Now feature_imp_cor_data should be available
   built_in_data <- feature_imp_cor_data %>% select(Peptide)
+
+  loadedData <- reactive({
+    return("Data loaded successfully!")
+  })
 
   options(shiny.maxRequestSize=30*1024^2)
   
