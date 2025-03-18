@@ -201,11 +201,11 @@ ui <- fluidPage(
 # Define the server
 server <- function(input, output, session) {
  loadData <- function() {
-  repo_url <- "https://github.com/hassanakthv/SIPMS/blob/main/data/20250202_SIPMS_ModelData.RData"
+  raw_url <- "https://raw.githubusercontent.com/hassanakthv/SIPMS/main/data/20250202_SIPMS_ModelData.RData"
   temp <- tempfile()
   
   # Download the RData file from GitHub
-  download.file(repo_url, temp, mode = "wb")
+  download.file(raw_url, temp, mode = "wb")
   
   # Load the data into the global environment
   load(temp, envir = .GlobalEnv)
