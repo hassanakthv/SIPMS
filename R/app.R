@@ -176,13 +176,13 @@ ui <- fluidPage(
     sidebarPanel(
       fileInput("file", "Upload Peptide List (.csv format)",
                 accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")),
-      tags$img(src = "SSE_How to Upload.png", width = "100%", height = "auto", alt = "How to Upload Guide"),
       actionButton("check_database", "Check against built-in database"),
       actionButton("analyze_btn", "Search"),
       textOutput("match_count"), 
       textOutput("match_rf_count"), 
       textOutput("check_ready"), 
-      textOutput("search_ready")
+      textOutput("search_ready"),
+      tags$img(src = "https://raw.githubusercontent.com/hassanakthv/SIPMS/main/images/SSE_How%20to%20Upload.png", width = "100%", height = "auto", alt = "How to Upload Guide")
     ),
     mainPanel(
       tabsetPanel(
