@@ -30,7 +30,7 @@ Species_Correlation <- function(Peptide_list) {
   names(Peptide_list)[-1] <- nn_nam[-1]
   
   
-  Species_check <- Peptide_list %>% filter(Peptide %in% feature_imp_cor_data$Peptide) %>% distinct()
+  #Species_check <- Peptide_list %>% filter(Peptide %in% feature_imp_cor_data$Peptide) %>% distinct()
   Species_check <- left_join(feature_imp_cor_data, Species_check, by = "Peptide")
   cor_m <- cor(x = Species_check %>% select(-Protein.Accession, -Peptide), use = "complete.obs")
   cor_m_res <- as.data.frame(cor_m) %>% select(names(Peptide_list)[-1]) %>% 
@@ -81,11 +81,11 @@ Species_Correlation <- function(Peptide_list) {
   
   return(fin_cor)
 }
-Check_Presence <- function(res_cor){
+Check_Presence <- function(res_cor, cutoff){
   
   check_result <- res_cor %>% ungroup() %>% group_by(UnknownSample) %>% do({
     dd = .
-    sp_check <- dd %>% filter(Mean_Cor>=0.7)
+    sp_check <- dd %>% filter(Mean_Cor>=cutoff)
     if (nrow(sp_check>=1)){
       ees <- data.frame(Present = "Yes")
     }
@@ -137,6 +137,11 @@ filter_peptides <- function(uploaded_data, built_in_data) {
   # Find common peptides (Random Forest)
   common_rf_peptides <- intersect(uploaded_data$Peptide, good_pep$Peptide)
   
+  
+  # Model peptides
+  model_peptides <- left_join(built_in_data %>% select(Peptide), uploaded_data, by = "Peptide")
+
+  
   # Count and display the number of matches (Random Forest)
   num_rf_matches <- length(common_rf_peptides)
   message(paste("Number of matching species-specific peptides (Random Forest model):", num_rf_matches))
@@ -147,7 +152,7 @@ filter_peptides <- function(uploaded_data, built_in_data) {
   # Filter uploaded dataset to retain only common peptides
   filtered_data <- uploaded_data[uploaded_data$Peptide %in% common_peptides, ]
   
-  return(list(filtered_data = filtered_data, num_matches = num_matches, num_rf = num_rf_matches))
+  return(list(filtered_data = filtered_data, num_matches = num_matches, num_rf = num_rf_matches, model_peptides = model_peptides))
 }
 
 
@@ -176,6 +181,9 @@ ui <- fluidPage(
     sidebarPanel(
       fileInput("file", "Upload Peptide List (.csv format)",
                 accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")),
+      sliderInput("cor_cutoff", 
+                  label = "Correlation Cutoff", 
+                  min = 0, max = 1, value = 0.5, step = 0.01),
       actionButton("check_database", "Check against built-in database"),
       actionButton("analyze_btn", "Search"),
       textOutput("match_count"), 
@@ -266,7 +274,8 @@ server <- function(input, output, session) {
       incProgress(1, detail = "Finalizing results...")
       Sys.sleep(1)
       
-      result <- Species_Correlation(filtered_result()$filtered_data)
+      #result <- Species_Correlation(filtered_result()$filtered_data)
+      result <- Species_Correlation(filtered_result()$model_peptides)
       return(result)
     })
   })
@@ -290,8 +299,8 @@ server <- function(input, output, session) {
   
   
   pres_check <- reactive({
-    
-    r_pres <- Check_Presence(sample_correlation())
+    input$cor_cutoff
+    r_pres <- Check_Presence(sample_correlation(),input$cor_cutoff)
     
   })
   output$presence_species <- renderText({
@@ -341,26 +350,44 @@ server <- function(input, output, session) {
       
       ## Prediction Score for samples in the database
       sp <- unique(pres_check() %>% filter(Present == "Yes"))$UnknownSample 
-      cleaned_pep <- filtered_result()$filtered_data %>% select(Peptide, sp)
+      #cleaned_pep <- filtered_result()$filtered_data %>% select(Peptide, sp)
+      cleaned_pep <- filtered_result()$model_peptides %>% select(Peptide, sp)
       
       nn_nam <- names(cleaned_pep)
       cleaned_pep <- Sum_Normalization(x = cleaned_pep %>% select(-Peptide), dff_ = cleaned_pep %>% select(Peptide))
     
       names(cleaned_pep) <- nn_nam
       
-      missing_peptides <- anti_join(good_pep, cleaned_pep, by = "Peptide") %>% ungroup() %>% 
-        select(Peptide)
+      #missing_peptides <- anti_join(good_pep, cleaned_pep, by = "Peptide") %>% ungroup() %>% 
+      #  select(Peptide)
      
       
       # Filter existing peptides and combine with missing ones
-      rf_pep <- cleaned_pep %>%
-        filter(Peptide %in% good_pep$Peptide) %>%
-        distinct() %>%
-        bind_rows(missing_peptides) 
+      #rf_pep <- cleaned_pep %>%
+       # filter(Peptide %in% good_pep$Peptide) %>%
+        #distinct() %>%
+        #bind_rows(missing_peptides) 
+      
+      
+      rf_pep <- left_join(good_pep %>% ungroup() %>% select(Peptide), cleaned_pep, by = "Peptide")
+      
+      
     
       # Imputing with a constant value for any missing peptide
-      rf_pep[is.na(rf_pep)] <- 10^-15
-     
+      rf_pep[rf_pep==0] <- NA
+      na_idx <- which(is.na(rf_pep), arr.ind = TRUE)
+      
+      # Generate random values uniformly on the log10 scale between 1e-15 and 1e-12
+      # We use log-uniform sampling to avoid bias toward 1e-12
+      n_na <- nrow(na_idx)
+      random_vals <- 10^runif(n_na, min = -12, max = -11)
+      
+      # Replace each NA with a random value
+      for (i in seq_len(n_na)) {
+        rf_pep[na_idx[i, "row"], na_idx[i, "col"]] <- random_vals[i]
+      }
+      
+      
       
       rf_pep[,-1] <- log10(rf_pep[,-1])
       
