@@ -30,7 +30,7 @@ Species_Correlation <- function(Peptide_list) {
   names(Peptide_list)[-1] <- nn_nam[-1]
   
   
-  #Species_check <- Peptide_list %>% filter(Peptide %in% feature_imp_cor_data$Peptide) %>% distinct()
+  Species_check <- Peptide_list %>% filter(Peptide %in% feature_imp_cor_data$Peptide) %>% distinct()
   Species_check <- left_join(feature_imp_cor_data, Species_check, by = "Peptide")
   cor_m <- cor(x = Species_check %>% select(-Protein.Accession, -Peptide), use = "complete.obs")
   cor_m_res <- as.data.frame(cor_m) %>% select(names(Peptide_list)[-1]) %>% 
